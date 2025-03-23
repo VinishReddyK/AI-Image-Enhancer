@@ -1,87 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Image Upload and Processing</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-      .main-function {
-        max-width: 400px;
-        margin: 0 auto;
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Upload and Processing</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    .container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: auto;
+      width: 90%;
+      max-width: 1200px;
+      height: 100vh;
+      padding: 20px;
+      flex-wrap: wrap;
+    }
+
+    .section {
+      width: 45%;
+      height: 70%;
+      max-width: 600px;
+      aspect-ratio: 1;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      overflow: hidden;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .header {
+      padding: 20px;
+      background-color: white;
+      width: 100%;
+      z-index: 1000;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .dark-theme .header {
+      background-color: #343a40 !important;
+      border-bottom-color: #6c757d;
+      color: #f8f9fa;
+    }
+
+    .section h2 {
+      margin-bottom: 20px;
+    }
+
+    .drag-box {
+      width: 100%;
+      height: 100%;
+      background-color: #e9ecef;
+      border: 2px dashed #007bff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .drag-box.dragover {
+      background-color: #cce5ff;
+      border-color: #0056b3;
+    }
+
+    .btn-grey {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .img-fluid {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .dark-theme {
+      background-color: #343a40;
+      color: #f8f9fa;
+    }
+
+    .dark-theme .section {
+      background-color: #495057;
+      color: #f8f9fa;
+    }
+
+    .dark-theme .text-muted {
+      color: #f8f9fa !important;
+    }
+
+    .dark-theme .btn-grey {
+      background-color: #fff;
+      color: #343a40;
+      pointer-events: none;
+    }
+
+    .dark-theme .drag-box {
+      background-color: #6c757d;
+      border-color: #f8f9fa;
+    }
+
+    .dark-theme .btn-primary {
+      background-color: #0d6efd;
+      color: #f8f9fa;
+    }
+
+    @media (max-width: 768px) {
+      .section {
+        width: 100%;
+        height: 50%;
+        margin-bottom: 20px;
       }
-      .output {
-        max-width: 600px;
-        margin: 0 auto;
-      }
-      .container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: auto;
-        width: fit-content;
-        height: 100vh;
-        flex-direction: column;
-      }
-    </style>
-  </head>
-  <body class="container">
-    <div class="input">
-      <h1 class="text-primary text-center">Upload and Process Image</h1>
-      <div class="main-function card p-4 shadow-sm">
-        <div class="mb-3">
-          <input type="file" id="imageInput" class="form-control" accept="image/*" required />
-        </div>
-        <button id="uploadButton" type="button" class="btn btn-primary w-100">Upload and Process</button>
+    }
+  </style>
+</head>
+
+<body>
+  <header
+    class="header sticky-top text-center d-flex justify-content-center align-items-center gap-3 py-4 bg-white shadow-sm">
+    <h1 class="m-0">Image Processing Project</h1>
+    <button id="themeToggle" class="btn btn-secondary">
+      <i class="bi bi-moon-fill"></i> Dark Mode
+    </button>
+  </header>
+
+  <div class="container">
+    <div class="section">
+      <h2 class="text-center text-primary">Upload Image</h2>
+      <div class="drag-box" id="drop-area">
+        <input type="file" id="imageInput" class="d-none" accept="image/*" />
+        <p>Drag & Drop or Click to Select Image</p>
       </div>
+      <button id="uploadButton" type="button" class="btn btn-primary w-100 mt-3" onclick="processImage()">
+        <i class="bi bi-upload"></i> Upload and Process
+      </button>
     </div>
 
-    <div class="output mt-4 text-center">
-      <h2 id="processed-image-headding" class="text-secondary d-none">Processed Image:</h2>
-      <div id="result"></div>
-      <a id="downloadLink" class="btn btn-success mt-3 d-none" download>Download Processed Image</a>
+    <div class="section">
+      <h2 class="text-center text-primary">Processed Image</h2>
+      <div class="drag-box" id="result">
+        <p class="text-center text-muted">No image processed yet</p>
+      </div>
+      <a id="downloadLink" class="btn btn-grey w-100 mt-3" style="pointer-events: none;" download>
+        <i class="bi bi-download"></i> Download Processed Image
+      </a>
     </div>
+  </div>
 
-    <script>
-      document.getElementById("uploadButton").addEventListener("click", function () {
-        const fileInput = document.getElementById("imageInput");
-        const file = fileInput.files[0];
+  <script>
+    const dropArea = document.getElementById("drop-area");
+    const fileInput = document.getElementById("imageInput");
 
-        if (!file) {
-          alert("Please select an image file.");
-          return;
-        }
+    dropArea.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      dropArea.classList.add("dragover");
+    });
 
-        const formData = new FormData();
-        formData.append("image", file);
+    dropArea.addEventListener("dragleave", () => {
+      dropArea.classList.remove("dragover");
+    });
 
-        fetch("http://localhost:3000/uploads", {
-          method: "POST",
-          body: formData,
+    dropArea.addEventListener("drop", (event) => {
+      event.preventDefault();
+      dropArea.classList.remove("dragover");
+      const file = event.dataTransfer.files[0];
+      if (file) {
+        fileInput.files = event.dataTransfer.files;
+        displayImage(file);
+      }
+    });
+
+    dropArea.addEventListener("click", () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) {
+        displayImage(file);
+      }
+    });
+
+    function displayImage(file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.classList.add("img-fluid", "border", "rounded", "shadow-sm");
+        dropArea.innerHTML = "";
+        dropArea.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function processImage() {
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select an image file.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("image", file);
+
+      fetch("http://localhost:3000/uploads", {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.text())
+        .then((data) => {
+          const resultDiv = document.getElementById("result");
+          const downloadLink = document.getElementById("downloadLink");
+
+          if (data.startsWith("/uploads/processed_")) {
+            resultDiv.innerHTML = `<img src="${data}" alt="Processed Image" class="img-fluid border rounded shadow-sm mt-3">`;
+            downloadLink.href = data;
+            downloadLink.style.pointerEvents = "auto";
+            downloadLink.classList.remove("btn-grey");
+            downloadLink.classList.add("btn-success");
+          } else {
+            resultDiv.innerHTML = `<p class="text-danger">${data}</p>`;
+            downloadLink.style.pointerEvents = "none";
+          }
         })
-          .then((response) => response.text())
-          .then((data) => {
-            const resultDiv = document.getElementById("result");
-            const downloadLink = document.getElementById("downloadLink");
-            document.getElementById("processed-image-headding").classList.remove("d-none");
+        .catch((error) => {
+          console.error("Fetch error:", error);
+          document.getElementById("result").innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+        });
+    }
 
-            if (data.startsWith("/uploads/processed_")) {
-              resultDiv.innerHTML = `<img src="${data}" alt="Processed Image" class="img-fluid border rounded shadow-sm mt-3">`;
-              downloadLink.href = data;
-              downloadLink.classList.remove("d-none");
-            } else {
-              resultDiv.innerHTML = `<p class="text-danger">${data}</p>`;
-              downloadLink.classList.add("d-none");
-              document.getElementById("processed-image-headding").classList.add("d-none");
-            }
-          })
-          .catch((error) => {
-            console.error("Fetch error:", error);
-            document.getElementById("result").innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
-          });
-      });
-    </script>
+    const themeToggle = document.getElementById("themeToggle");
+    const body = document.body;
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+    themeToggle.addEventListener("click", () => {
+      body.classList.toggle("dark-theme");
+      if (body.classList.contains("dark-theme")) {
+        themeToggle.innerHTML = `<i class="bi bi-sun-fill"></i> Light Mode`;
+      } else {
+        themeToggle.innerHTML = `<i class="bi bi-moon-fill"></i> Dark Mode`;
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>
