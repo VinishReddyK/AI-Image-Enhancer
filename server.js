@@ -7,6 +7,7 @@ const { exec } = require("child_process");
 
 const app = express();
 
+// Need to update cors to only our domain when hosted
 app.use(cors());
 
 const uploadDir = path.join(__dirname, "uploads");
