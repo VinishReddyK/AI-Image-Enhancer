@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Upload and Processing</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      input[type="file"] {
+        margin-bottom: 10px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      .output {
+        margin-top: 20px;
+      }
+
+      .output img {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #ddd;
+        padding: 5px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Upload and Process Image</h1>
+    <input type="file" id="imageInput" accept="image/*" required />
+    <button id="uploadButton">Upload and Process</button>
+
+    <div class="output">
+      <h2>Processed Image:</h2>
+      <div id="result"></div>
+    </div>
+
+    <script>
+      // Handle file upload and processing
+      document.getElementById("uploadButton").addEventListener("click", function () {
+        const fileInput = document.getElementById("imageInput");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          alert("Please select an image file.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        fetch("http://localhost:3000/uploads", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.text())
+          .then((data) => {
+            if (data.startsWith("/uploads/processed_")) {
+              // Display the processed image
+              document.getElementById("result").innerHTML = `<img src="${data}" alt="Processed Image">`;
+            } else {
+              // Display the error message
+              document.getElementById("result").innerHTML = `<p style="color: red;">${data}</p>`;
+            }
+          })
+          .catch((error) => {
+            document.getElementById("result").innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+          });
+      });
+    </script>
+  </body>
+</html>
