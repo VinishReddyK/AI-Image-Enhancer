@@ -7,26 +7,21 @@ const { exec } = require("child_process");
 
 const app = express();
 
-// Need to update cors to only our domain when hosted
 app.use(cors());
 
 const uploadDir = path.join(__dirname, "uploads");
 
-// Ensure the upload directory exists
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Serve static files from the uploads directory
 app.use("/uploads", express.static(uploadDir));
 
-// Set up multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    // Sanitize the filename
     const safeFilename = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, "_");
     cb(null, safeFilename);
   },
