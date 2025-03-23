@@ -1,10 +1,14 @@
 const express = require("express");
+var cors = require("cors");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 
 const app = express();
+
+app.use(cors());
+
 const uploadDir = path.join(__dirname, "uploads");
 
 // Ensure the upload directory exists
