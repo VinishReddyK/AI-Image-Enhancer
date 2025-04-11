@@ -35,7 +35,7 @@ npm install
 npm run dev
 ```
 ### 4. Open in Your Browser
-- Head over to http://127.0.0.1:8080 or http://192.168.10.221:8080
+- Head over to http://127.0.0.1:8080
 - Upload your blurry, sad image
 - Watch it become clearer, prettier, and more respectable
 
